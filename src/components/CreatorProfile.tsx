@@ -16,16 +16,14 @@ const CreatorProfile = () => {
         </div>
       </div>
 
-      <div className="flex-1 text-center lg:text-left font-normal  font-arial">
-        <h1 className="text-5xl font-bold text-gray-800 mb-6 font-normal  font-arial">
-          Steph Sier
-        </h1>
-        <p className="text-[#2E4C47] text-[19.17px] leading-[29.12px] font-normal mb-8 font-arial max-w-2xl">
+      <div className="flex-1 text-center lg:text-left">
+        <h1 className="text-5xl font-bold text-gray-800 mb-6">Steph Sier</h1>
+        <div className="text-[#2E4C47] text-[19.17px] w-[800px] font-normal mb-8 max-w-2xl mb-[62px]">
           Steph is a senior clinician and therapist at Q Psychology, and a
           mental health accredited social worker. She has an extensive
           background working in inpatient and outpatient mental health programs
           and helps guide and support the clinical team at Q Psychology.
-        </p>
+        </div>
         <div className="flex justify-center lg:justify-start space-x-4">
           <button className="p-3 rounded-full hover:bg-gray-300 transition-colors">
             <InstagramIcon className="w-6 h-6 text-gray-600" />
