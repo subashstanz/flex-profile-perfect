@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowLeft, Instagram } from "lucide-react";
 import profileImage from "../assets/devin.jpg";
+import { useLocation } from "react-router-dom";
 
 interface DrawerOverlayProps {
   isOpen: boolean;
@@ -8,6 +9,35 @@ interface DrawerOverlayProps {
 }
 
 const DrawerOverlay: React.FC<DrawerOverlayProps> = ({ isOpen, onClose }) => {
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const reelId = params.get("reels");
+  const [reelData, setReelData] = useState(null);
+  console.log("reelId", reelId);
+
+  useEffect(() => {
+    console.log(reelId);
+
+    fetch(`http://localhost:4000/api/queries/${reelId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data?.reelUrl);
+        const productData = data?.matches?.map((item) => {
+          return {
+            headout: {
+              imageUrl: item?.headout?.imageUrl,
+              bookingUrl: item?.headout?.bookingUrl,
+              displayName: item?.headout?.displayName,
+              listingPrice: item?.headout?.listingPrice?.finalPrice,
+              listingPriceCurrency: item?.headout?.listingPrice?.currencyCode,
+              description: item?.headout?.description,
+            },
+            attraction: item?.attraction,
+          };
+        });
+        setReelData(productData);
+      });
+  }, [reelId]);
   const matches = [
     {
       headout: {
@@ -15,8 +45,12 @@ const DrawerOverlay: React.FC<DrawerOverlayProps> = ({ isOpen, onClose }) => {
           "https://cdn-imgix.headout.com/media/images/83b0cd72896bb0299f46488c0423c701-158-dubai-burj-khalifa-02.jpg",
         bookingUrl: "https://headout.com/burj-khalifa-tickets-c-158/",
         displayName: "Burj Khalifa Tickets",
+        listingPrice: 100,
+        listingPriceCurrency: "USD",
+        description:
+          "<ul>\n<li>\n<p>Explore Tokyo Tower, one of Japan's most famous landmarks, and enjoy panoramic views from the Main Deck, located 150m above the city's skyline.</p>\n</li>\n<li>\n<p>On clear days, glimpse the beauty of Tokyo Bay and Mount Fuji from the Main Deck, offering unforgettable views of Japan's natural wonders.</p>\n</li>\n<li>\n<p><strong>Upgrade</strong>: Step into the magical world of teamLab Planets, an immersive digital art installation that lets you interact with light, water, and color.</p>\n</li>\n<li>\n<p><strong>Upgrade</strong>: Maximize your Tokyo visit over 24 hours, granting unlimited rides to more than 285 stops across 13 lines, connecting top locations citywide.</p>\n</li>\n</ul>",
       },
-      attraction: "Burj Khalifa",
+      attraction: "",
     },
     {
       headout: {
@@ -204,7 +238,7 @@ const DrawerOverlay: React.FC<DrawerOverlayProps> = ({ isOpen, onClose }) => {
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {matches.map((activity, index) => (
+            {reelData.map((activity, index) => (
               <div
                 key={index}
                 className="bg-white border rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between h-full"
@@ -217,6 +251,21 @@ const DrawerOverlay: React.FC<DrawerOverlayProps> = ({ isOpen, onClose }) => {
                 <h4 className="font-semibold text-base mb-1 font-inter line-clamp-2">
                   {activity.headout.displayName}
                 </h4>
+                {activity.headout.listingPrice &&
+                  activity.headout.listingPriceCurrency && (
+                    <p className="text-teal-600 font-semibold text-sm mb-1">
+                      Price: {activity.headout.listingPrice}{" "}
+                      {activity.headout.listingPriceCurrency}
+                    </p>
+                  )}
+                {activity.headout.description && (
+                  <div
+                    className="text-gray-700 text-xs font-inter mb-2 line-clamp-2"
+                    dangerouslySetInnerHTML={{
+                      __html: activity.headout.description,
+                    }}
+                  />
+                )}
                 <div className="flex items-center justify-between mt-2">
                   {/* <div className="flex-1 min-w-0">
                     <span className="text-xs text-gray-500 font-inter">
